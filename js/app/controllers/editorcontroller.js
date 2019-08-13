@@ -297,7 +297,7 @@ app.controller('EditorController', ['$scope', 'TimezoneService', 'AutoCompletion
 		 * Everything location
 		 */
 		$scope.searchLocation = function(value) {
-			return AutoCompletionService.searchLocation(value).then(function(locations) {
+			return AutoCompletionService.searchLocation(value, $scope.properties.organizer, $scope.properties.start, $scope.properties.end).then(function(locations) {
 				locations = locations.map(function(location){
 					return {
 						label: _.escape(location.name) + "\n" + location.label,

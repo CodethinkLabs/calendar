@@ -40,16 +40,6 @@ app.service('VEventService', function(DavClient, StringUtility, XMLUtility, VEve
 	};
 
 	/**
-	 * get a time-range string from moment object
-	 * @param {moment} momentObject
-	 * @returns {string}
-	 */
-	context.getTimeRangeString = function(momentObject) {
-		const utc = momentObject.utc();
-		return utc.format('YYYYMMDD') + 'T' + utc.format('HHmmss') + 'Z';
-	};
-
-	/**
 	 * get all events from a calendar within a time-range
 	 * @param {Calendar} calendar
 	 * @param {moment} start
@@ -81,8 +71,8 @@ app.service('VEventService', function(DavClient, StringUtility, XMLUtility, VEve
 					children: [{
 						name: [DavClient.NS_IETF, 'c:time-range'],
 						attributes: [
-							['start', context.getTimeRangeString(start)],
-							['end', context.getTimeRangeString(end)]
+							['start', StringUtility.getTimeRangeString(start)],
+							['end', StringUtility.getTimeRangeString(end)]
 						]
 					}]
 				}]

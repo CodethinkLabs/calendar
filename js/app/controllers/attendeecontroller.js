@@ -82,9 +82,20 @@ app.controller('AttendeeController', function($scope, AutoCompletionService) {
 	};
 
 	$scope.search = function (value) {
-		return AutoCompletionService.searchAttendee(value).then((attendees) => {
+		/* Create the organizer if not already set */
+		var props = $scope.$parent.properties;
+		props.attendee = props.attendee || [];
+		if (props.organizer === null) {
+			props.organizer = {
+				value: 'mailto:' + $scope.$parent.emailAddress,
+				parameters: {
+					cn: OC.getCurrentUser().displayName
+				}
+			};
+		}
+		/* XXX: all-day events need to do more than blithely read the start and end times */
+		return AutoCompletionService.searchAttendee(value, props.organizer, props.dtstart, props.dtend).then((attendees) => {
 			const arr = [];
-
 			attendees.forEach((attendee) => {
 				const emailCount = attendee.email.length;
 				attendee.email.forEach((email) => {
@@ -97,8 +108,12 @@ app.controller('AttendeeController', function($scope, AutoCompletionService) {
 							email: email
 						});
 					}
+					if (attendee.busy) {
+						displayname = "(busy) " + displayname;
+					}
 
 					arr.push({
+						busy: attendee.busy,
 						displayname: displayname,
 						email: email,
 						name: attendee.name

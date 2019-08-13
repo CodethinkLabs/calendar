@@ -79,4 +79,15 @@ app.service('StringUtility', function () {
 
 		return uri;
 	};
+
+	/**
+	 * get a time-range string from moment object
+	 * @param {moment} momentObject
+	 * @returns {string}
+	 */
+	this.getTimeRangeString = function(momentObject) {
+		const utc = momentObject.utc();
+		return utc.format('YYYYMMDD') + 'T' + utc.format('HHmmss') + 'Z';
+	};
+
 });

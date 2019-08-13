@@ -21,22 +21,40 @@
  *
  */
 
-app.service('AutoCompletionService', ['$rootScope', '$http',
-	function ($rootScope, $http) {
+app.service('AutoCompletionService', ['$rootScope', '$http', 'VFreeBusyService',
+	function ($rootScope, $http, VFreeBusyService) {
 		'use strict';
 
-		this.searchAttendee = function(name) {
+		this.searchAttendee = function(name, organizer, start, end) {
 			return $http.post($rootScope.baseUrl + 'autocompletion/attendee', {
 				search: name
 			}).then(function (response) {
-				return response.data;
+				if (response.data.length === 0) {
+					/* Don't make a freebusy request if there are no matches */
+					return response.data;
+				}
+				return VFreeBusyService.get(organizer,
+					response.data, start, end
+				).then(function(freebusy) {
+					/* Iterate over response.data, inserting busy */
+					response.data.forEach(function(attendee) {
+						/* An attendee may have multiple E-mail addresses, but is busy if *any* are busy */
+						attendee.email.forEach(function(mail) {
+							if (!attendee.busy) {
+								attendee.busy = freebusy[mail];
+							}
+						});
+					});
+					return response.data;
+				});
 			});
 		};
 
-		this.searchLocation = function(address) {
+		this.searchLocation = function(address, organizer, start, end) {
 			return $http.post($rootScope.baseUrl + 'autocompletion/location', {
 				location: address
 			}).then(function (response) {
+				/* TODO: Use the response data to query for FreeBusy */
 				return response.data;
 			});
 		};
