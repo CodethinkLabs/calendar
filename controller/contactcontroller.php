@@ -25,6 +25,10 @@ use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http\JSONResponse;
 use OCP\Contacts\IManager;
 use OCP\IRequest;
+use OCP\IUserSession;
+use OCP\IGroupManager;
+use OCP\Calendar\Room\IManager as RoomManager;
+use OCP\Calendar\Resource\IManager as ResourceManager;
 
 class ContactController extends Controller {
 
@@ -34,15 +38,24 @@ class ContactController extends Controller {
 	 */
 	private $contacts;
 
+	private $userSession;
+
+	private $groupManaher;
 
 	/**
 	 * @param string $appName
 	 * @param IRequest $request an instance of the request
 	 * @param IManager $contacts
 	 */
-	public function __construct($appName, IRequest $request, IManager $contacts) {
+	public function __construct($appName, IRequest $request, IManager $contacts,
+			IUserSession $userSession, IGroupManager $groupManager,
+			RoomManager $roomManager, ResourceManager $resourceManager) {
 		parent::__construct($appName, $request);
 		$this->contacts = $contacts;
+		$this->userSession = $userSession;
+		$this->groupManager = $groupManager;
+		$this->roomManager = $roomManager;
+		$this->resourceManager = $resourceManager;
 	}
 
 
@@ -88,7 +101,7 @@ class ContactController extends Controller {
 	public function searchAttendee($search) {
 		$result = $this->contacts->search($search, ['FN', 'EMAIL']);
 
-		$contacts = [];
+		$attendees = [];
 		foreach ($result as $r) {
 			if (!isset($r['EMAIL'])) {
 				continue;
@@ -99,13 +112,63 @@ class ContactController extends Controller {
 				$r['EMAIL'] = [$r['EMAIL']];
 			}
 
-			$contacts[] = [
+			$attendees[] = [
 					'email' => $r['EMAIL'],
-					'name' => $name
+					'name' => $name,
+					'type' => 'INDIVIDUAL'
 			];
 		}
+		$user = $this->userSession->getUser();
+		$groups = $this->groupManager->getUserGroupIds($user);
+		/* Retrieve all rooms */
+		$roomBackends = $this->roomManager->getBackends();
+		foreach ($roomBackends as $backend) {
+			$backend_rooms = $backend->getAllRooms();
+			foreach($backend_rooms as $room) {
+				/* If "search" matches room E-mail or name */
+				$email = $room->getEMail();
+				$name = $room->getDisplayName();
+				if (strpos($name, $search) === false and strpos($email, $search) === false)
+					continue 1;
+				/* And, group restrictions has any intersection with user's groups */
+				$group_restrict = $room->getGroupRestrictions();
+				if ((!empty($group_restrict)) and empty(array_intersect($group_restrict, $groups)))
+					continue 1;
 
-		return new JSONResponse($contacts);
+				/* Add it to the list of attendees */
+				$attendees[] = [
+					'email' => [$email],
+					'name' => $name,
+					'type' => 'ROOM'
+				];
+			}
+		}
+		/* Retrieve all resources */
+		$resourceBackends = $this->resourceManager->getBackends();
+		foreach ($resourceBackends as $backend) {
+			$backend_resources = $backend->getAllResources();
+			foreach($backend_resources as $resource) {
+				$email = $resource->getEMail();
+				$name = $resource->getDisplayName();
+				/* If "search" matches resource E-mail or name */
+				if (strpos($name, $search) === false and strpos($email, $search) === false)
+					continue 1;
+				/* And, group restrictions has any intersection with user's groups */
+				$group_restrict = $resource->getGroupRestrictions();
+				if ((!empty($group_restrict)) and empty(array_intersect($group_restrict, $groups)))
+					continue 1;
+
+				/* Add it to the list of attendees */
+				$attendees[] = [
+					'email' => [$email],
+					'name' => $name,
+					'type' => 'RESOURCE'
+				];
+			}
+		}
+
+
+		return new JSONResponse($attendees);
 	}
 
 

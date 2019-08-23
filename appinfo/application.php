@@ -38,8 +38,12 @@ class Application extends App {
 		$container->registerService('ContactController', function(IAppContainer $c) {
 			$request = $c->query('Request');
 			$contacts = $c->getServer()->getContactsManager();
+			$userSession = $c->getServer()->getUserSession();
+			$groupManager = $c->getServer()->getGroupManager();
+			$roomManager = $c->getServer()->getCalendarRoomBackendManager();
+			$resourceManager = $c->getServer()->getCalendarResourceBackendManager();
 
-			return new Controller\ContactController($c->getAppName(), $request, $contacts);
+			return new Controller\ContactController($c->getAppName(), $request, $contacts, $userSession, $groupManager, $roomManager, $resourceManager);
 		});
 
 		$container->registerService('EmailController', function(IAppContainer $c) {
