@@ -114,6 +114,7 @@ app.controller('AttendeeController', function($scope, AutoCompletionService) {
 
 					arr.push({
 						busy: attendee.busy,
+						cutype: attendee.type,
 						displayname: displayname,
 						email: email,
 						name: attendee.name
@@ -134,7 +135,7 @@ app.controller('AttendeeController', function($scope, AutoCompletionService) {
 				role: 'REQ-PARTICIPANT',
 				rsvp: 'TRUE',
 				partstat: 'NEEDS-ACTION',
-				cutype: 'INDIVIDUAL'
+				cutype: item.cutype
 			}
 		});
 		$scope.nameofattendee = '';
