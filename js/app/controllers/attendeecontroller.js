@@ -45,7 +45,7 @@ app.controller('AttendeeController', function($scope, AutoCompletionService) {
 		$scope.properties.attendee = $scope.properties.attendee || [];
 		if ($scope.properties.attendee.length > 0 && $scope.properties.organizer === null) {
 			$scope.properties.organizer = {
-				value: 'mailto:' + $scope.$parent.emailAddress,
+				value: 'mailto:' + $scope.$parent.emailAddress.replace("+", "%2b"),
 				parameters: {
 					cn: OC.getCurrentUser().displayName
 				}
@@ -87,7 +87,7 @@ app.controller('AttendeeController', function($scope, AutoCompletionService) {
 		props.attendee = props.attendee || [];
 		if (props.organizer === null) {
 			props.organizer = {
-				value: 'mailto:' + $scope.$parent.emailAddress,
+				value: 'mailto:' + $scope.$parent.emailAddress.replace("+", "%2b"),
 				parameters: {
 					cn: OC.getCurrentUser().displayName
 				}
