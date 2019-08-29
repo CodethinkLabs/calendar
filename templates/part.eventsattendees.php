@@ -23,7 +23,7 @@
  */
 ?>
 <div class="advanced--fieldset" ng-hide="emailAddress === ''">
-	<input type="text" class="advanced--input attendeename" ng-model="nameofattendee"
+	<input type="search" class="advanced--input attendeename" ng-model="nameofattendee"
 		ng-keyup="$event.keyCode == 13 && add(nameofattendee)"
 		placeholder="<?php p($l->t('Email address of attendee'))?>"
 		name="nameofattendee" autocomplete="off"
