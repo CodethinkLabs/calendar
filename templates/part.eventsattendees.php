@@ -47,25 +47,36 @@
 				</button>
 			</div>
 			<div class="attendeeoptions" ng-show="attendeeoptions">
-				<label class="label" for="attendeecutype_{{$id}}"><?php p($l->t('Type')); ?>:</label>
-				<select class="event-select pull-left"
-					ng-model="attendee.parameters.cutype"
-					ng-selected="attendee.parameters.cutype"
-					ng-options="cutstat.val as cutstat.displayname for cutstat in cutstats"
-					id="attendeecutype_{{$id}}">
-				</select>
-				<div class="attendeeopt pull-right">
-					<input type="checkbox" name="attendeecheckbox" class="checkbox"
-						ng-checked="attendee.parameters.role == 'OPT-PARTICIPANT'"
-						ng-click="attendee.parameters.role == 'OPT-PARTICIPANT' ? attendee.parameters.role = 'REQ-PARTICIPANT' : attendee.parameters.role = 'OPT-PARTICIPANT'"
-						id="attendeeopt_{{$id}}"/>
-					<label class="optionallabel" for="attendeeopt_{{$id}}"><?php p($l->t('Optional'));?></label>
-					<input type="checkbox" name="attendeecheckbox" class="checkbox"
-						ng-checked="attendee.parameters.role == 'NON-PARTICIPANT'"
-						ng-click="attendee.parameters.role == 'NON-PARTICIPANT' ? attendee.parameters.role = 'REQ-PARTICIPANT' : attendee.parameters.role = 'NON-PARTICIPANT'"
-						id="attendeeno_{{$id}}"/>
-					<label class="optionallabel" for="attendeeno_{{$id}}"><?php p($l->t('Does not attend'));?></label>
+				<div>
+					<label class="label" for="attendeecutype_{{$id}}"><?php p($l->t('Type')); ?>:</label>
+					<select class="event-select pull-left"
+						ng-model="attendee.parameters.cutype"
+						ng-selected="attendee.parameters.cutype"
+						ng-options="cutstat.val as cutstat.displayname for cutstat in cutstats"
+						id="attendeecutype_{{$id}}">
+					</select>
 				</div>
+				<div>
+					<label class="label" for="attendeerole_{{$id}}"><?php p($l->t('Role')); ?>:</label>
+					<select class="event-select pull-left"
+						ng-model="attendee.parameters.role"
+						ng-selected="attendee.parameters.role"
+						ng-options="rolestat.val as rolestat.displayname for rolestat in rolestats"
+						id="attendeerole_{{$id}}">
+					</select>
+				</div>
+				<div>
+					<label class="label" for="attendeepartstat_{{$id}}"><?php p($l->t('Participating')); ?>:</label>
+					<!-- TODO: Make read-only (ng-readonly) if you're not the attendee -->
+					<select class="event-select pull-left"
+						ng-model="attendee.parameters.partstat"
+						ng-selected="attendee.parameters.partstat"
+						ng-options="partstat.val as partstat.displayname for partstat in partstats"
+						ng-disabled="mailtoEmail !== attendee.value"
+						id="attendeepartstat_{{$id}}">
+					</select>
+				</div>
+
 			</div>
 		</li>
 	</ul>

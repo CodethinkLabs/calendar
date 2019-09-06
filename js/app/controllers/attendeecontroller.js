@@ -26,6 +26,7 @@ app.controller('AttendeeController', function($scope, AutoCompletionService) {
 
 	$scope.newAttendeeGroup = -1;
 	$scope.nameofattendee = '';
+	$scope.mailtoEmail = "mailto:" + $scope.$parent.emailAddress;
 
 	$scope.cutstats = [
 		{displayname: t('calendar', 'Individual'), val: 'INDIVIDUAL'},
@@ -35,10 +36,17 @@ app.controller('AttendeeController', function($scope, AutoCompletionService) {
 		{displayname: t('calendar', 'Unknown'), val: 'UNKNOWN'}
 	];
 
-	$scope.partstats = [
+	$scope.rolestats = [
 		{displayname: t('calendar', 'Required'), val: 'REQ-PARTICIPANT'},
 		{displayname: t('calendar', 'Optional'), val: 'OPT-PARTICIPANT'},
 		{displayname: t('calendar', 'Does not attend'), val: 'NON-PARTICIPANT'}
+	];
+
+	$scope.partstats = [
+		{displayname: t('calendar', 'Needs Action'), val: 'NEEDS-ACTION'},
+		{displayname: t('calendar', 'Accepted'), val: 'ACCEPTED'},
+		{displayname: t('calendar', 'Declined'), val: 'DECLINED'},
+		{displayname: t('calendar', 'Tentative'), val: 'TENTATIVE'},
 	];
 
 	$scope.$parent.registerPostHook(function() {
